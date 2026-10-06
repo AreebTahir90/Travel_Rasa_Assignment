@@ -1,0 +1,180 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - ask_help
+  - ask_hotels
+  - ask_transport
+  - ask_attractions
+  - ask_weather
+  - convert_currency
+  - estimate_carbon
+  - ask_sustainability
+  - start_trip_plan
+  - inform
+  - request_human
+  - ask_carbon_offset
+
+entities:
+  - destination
+
+
+slots:
+
+  destination:
+    type: text
+    influence_conversation: false
+    mappings:
+
+      # Used when destination is detected normally
+      - type: from_entity
+        entity: destination
+
+      # Used while the trip planning form is asking
+      - type: from_text
+        conditions:
+          - active_loop: trip_form
+            requested_slot: destination
+
+
+  travel_dates:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: trip_form
+            requested_slot: travel_dates
+
+
+  budget:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: trip_form
+            requested_slot: budget
+
+
+  sustainability_level:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: trip_form
+            requested_slot: sustainability_level
+
+
+forms:
+
+  trip_form:
+    required_slots:
+      - destination
+      - travel_dates
+      - budget
+      - sustainability_level
+
+
+responses:
+
+  utter_greet:
+    - text: "Hello! I am the Eco Travel Assistant. How can I help you today?"
+
+
+  utter_goodbye:
+    - text: "Goodbye. Have a safe and sustainable trip!"
+
+
+  utter_help:
+    - text: |
+        I can help you with:
+        - planning a sustainable trip
+        - hotels
+        - public transport
+        - attractions
+        - weather
+        - currency conversion
+        - carbon estimates
+
+
+  utter_sustainability:
+    - text: |
+        Some simple ways to travel more sustainably are using public transport,
+        walking or cycling when possible, and choosing lower-carbon transport
+        such as trains and coaches.
+
+
+  utter_fallback:
+    - text: |
+        Sorry, I did not understand that.
+        You can ask about hotels, transport, attractions, weather,
+        carbon emissions or trip planning.
+
+
+  # --------------------------------------------------
+  # Trip planning questions
+  # --------------------------------------------------
+
+  utter_ask_trip_form_destination:
+    - text: "Where would you like to travel?"
+
+
+  utter_ask_trip_form_travel_dates:
+    - text: "What dates are you planning to travel?"
+
+
+  utter_ask_trip_form_budget:
+    - text: "What is your approximate budget for the trip?"
+
+
+  utter_ask_trip_form_sustainability_level:
+    - text: |
+        How important is sustainability for this trip?
+        Please choose low, medium or high.
+
+
+  utter_trip_summary:
+    - text: |
+        Thank you. I have your trip details:
+
+        Destination: {destination}
+        Travel dates: {travel_dates}
+        Budget: {budget}
+        Sustainability preference: {sustainability_level}
+
+        I can now use these preferences to help recommend travel options.
+
+
+
+#Carbon Offset
+
+  utter_carbon_offset:
+    - text: |
+        Carbon offsetting can be used for emissions that cannot easily be avoided.
+        A better approach is to reduce emissions first by choosing lower-carbon
+        transport such as trains, coaches, walking or cycling.
+
+        For unavoidable emissions, travellers can support verified projects such
+        as renewable energy, reforestation or methane reduction programmes.
+
+        Offset schemes should be checked carefully because project quality and
+        environmental impact can vary.
+
+actions:
+  - action_find_hotels
+  - action_find_transport
+  - action_find_attractions
+  - action_get_weather
+  - action_convert_currency
+  - action_estimate_carbon
+  - action_recommend_transport
+  - action_human_handover
+  - action_handle_fallback
+
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
